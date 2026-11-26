@@ -33,15 +33,18 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
-      - name: Package app artifact
+      - name: Package unsigned IPA
         run: |
-          mkdir -p build/artifact
-          APP_PATH="build/DerivedData/Build/Products/Release-iphoneos/DynamicIsland.app"
-          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" build/artifact/DynamicIsland-unsigned-app.zip
+          mkdir -p build/Payload build/artifact
+          APP_PATH="build/DerivedData/Build/Products/Release-iphoneos/Dynamic Island.app"
+          test -d "$APP_PATH"
+          ditto "$APP_PATH" "build/Payload/Dynamic Island.app"
+          cd build
+          /usr/bin/zip -qry artifact/DynamicIsland-unsigned.ipa Payload
 
       - name: Upload build
         uses: actions/upload-artifact@v4
         with:
           name: DynamicIsland-unsigned-iOS-app
-          path: build/artifact/DynamicIsland-unsigned-app.zip
+          path: build/artifact/DynamicIsland-unsigned.ipa
           retention-days: 7
